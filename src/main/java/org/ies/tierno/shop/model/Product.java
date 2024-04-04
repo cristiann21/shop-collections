@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Shop {
+public class Product {
+    private int id;
     private String name;
-    private Map<Integer, Product> productsById;
-    private TreeSet<Customer> customers;
+    private double price;
+    private Set<String> tags;
 }
