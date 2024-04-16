@@ -13,7 +13,6 @@ public class Customer implements Comparable<Customer> {
     private String nif;
     private String name;
     private String surname;
-
     private List<Order> orders;
 
     @Override
