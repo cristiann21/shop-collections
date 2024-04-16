@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -39,38 +40,36 @@ public class Shop {
         }
     }
 
-    public List<Product> getOrderProducts(int orderId, String nif) {
-        Order order = findCustomerOrder(nif, orderId);
-        if (order != null) {
-            List<Product> products = new ArrayList<>();
-            for (var item : order.getItems()) {
-                products.add(productsById.get(item.getProductId()));
-            }
-            return products;
-        }
-        return null;
+    public Optional<List<Product>> getOrderProducts(int orderId, String nif) {
+        Optional<Order> orderOpt = findCustomerOrder(nif, orderId);
+        return orderOpt.map(order ->
+                order
+                        .getItems()
+                        .stream()
+                        .map(item -> productsById.get(item.getProductId()))
+                        .collect(Collectors.toList())
+        );
     }
 
     public List<Product> findProductsByTag(String tag) {
-        List<Product> products = new ArrayList<>();
-        for (var product : productsById.values()) {
-            if (product.getTags().contains(tag)) {
-                products.add(product);
-            }
-        }
-        return products;
+        return productsById
+                .values()
+                .stream()
+                .filter(product -> product.getTags().contains(tag))
+                .collect(Collectors.toList());
     }
 
-    public Double calculateCustomerExpenditures(String nif) {
-        Customer customer = findCustomer(nif);
-        if (customer != null) {
-            double expenditures = 0;
-            for (var order : customer.getOrders()) {
-                expenditures += order.getPrice();
-            }
-            return expenditures;
-        }
-        return null;
+    public Optional<Double> calculateCustomerExpenditures(String nif) {
+        Optional<Customer> customerOpt = findCustomer(nif);
+
+        return customerOpt
+                .map(customer ->
+                        customer
+                                .getOrders()
+                                .stream()
+                                .mapToDouble(order -> order.getPrice())
+                                .sum()
+                );
     }
 
 }
